@@ -1,0 +1,139 @@
+###Relational
+Database showcase::simple::store::TestDatabase
+(
+  Table INTDEMO0
+  (
+    LEFTARG INTEGER,
+    RIGHTARG INTEGER
+  )
+)
+
+
+###Pure
+function demo::bitOr(): meta::pure::metamodel::relation::Relation<meta::pure::metamodel::type::Any>[*]
+{
+  #>{showcase::simple::store::TestDatabase.INTDEMO0}#->from(
+    showcase::simple::connection::TestRuntime
+  )->extend(
+    ~[
+       bitOr: x|$x.LEFTARG->toOne()->bitOr(
+      $x.RIGHTARG->toOne()
+    )
+     ]
+  )
+}
+
+function demo::bitShiftLeft(): meta::pure::metamodel::relation::Relation<meta::pure::metamodel::type::Any>[*]
+{
+  #>{showcase::simple::store::TestDatabase.INTDEMO0}#->from(
+    showcase::simple::connection::TestRuntime
+  )->extend(
+    ~[
+       bitShiftLeft: x|$x.LEFTARG->toOne()->bitShiftLeft(
+      $x.RIGHTARG->toOne()
+    )
+     ]
+  )
+}
+
+function demo::bitXor(): meta::pure::metamodel::relation::Relation<meta::pure::metamodel::type::Any>[*]
+{
+  #>{showcase::simple::store::TestDatabase.INTDEMO0}#->from(
+    showcase::simple::connection::TestRuntime
+  )->extend(
+    ~[
+       bitXor: x|$x.LEFTARG->toOne()->bitXor(
+      $x.RIGHTARG->toOne()
+    )
+     ]
+  )
+}
+
+function demo::xor(): meta::pure::metamodel::relation::Relation<meta::pure::metamodel::type::Any>[*]
+{
+  #>{showcase::simple::store::TestDatabase.INTDEMO0}#->from(
+    showcase::simple::connection::TestRuntime
+  )->extend(
+    ~[
+       LeftGreater: x|$x.LEFTARG >
+      $x.RIGHTARG,
+       RightGreater: x|$x.LEFTARG <
+      $x.RIGHTARG
+     ]
+  )->extend(
+    ~[
+       XOR: x|$x.LeftGreater->xor(
+      $x.RightGreater
+    )
+     ]
+  )
+}
+
+function demo::bitNot(): meta::pure::metamodel::relation::Relation<meta::pure::metamodel::type::Any>[*]
+{
+  #>{showcase::simple::store::TestDatabase.INTDEMO0}#->from(
+    showcase::simple::connection::TestRuntime
+  )->extend(
+    ~[
+       bitNotLeft: x|$x.LEFTARG->toOne()->bitNot(),
+       bitNotRight: x|$x.RIGHTARG->toOne()->bitNot()
+     ]
+  )
+}
+
+function demo::bitShiftRight(): meta::pure::metamodel::relation::Relation<meta::pure::metamodel::type::Any>[*]
+{
+  #>{showcase::simple::store::TestDatabase.INTDEMO0}#->from(
+    showcase::simple::connection::TestRuntime
+  )->extend(
+    ~[
+       bitShiftRight: x|$x.LEFTARG->toOne()->bitShiftRight(
+      $x.RIGHTARG->toOne()
+    )
+     ]
+  )
+}
+
+function demo::bitAnd(): meta::pure::metamodel::relation::Relation<meta::pure::metamodel::type::Any>[*]
+{
+  #>{showcase::simple::store::TestDatabase.INTDEMO0}#->from(
+    showcase::simple::connection::TestRuntime
+  )->extend(
+    ~[
+       bitAnd: x|$x.LEFTARG->toOne()->bitAnd(
+      $x.RIGHTARG->toOne()
+    )
+     ]
+  )
+}
+
+
+###Connection
+RelationalDatabaseConnection showcase::simple::connection::TestConnection
+{
+  store: showcase::simple::store::TestDatabase;
+  type: H2;
+  specification: LocalH2
+  {
+    testDataSetupSqls: [
+      '\nDrop table if exists INTDEMO0;\nCreate Table INTDEMO0(LEFTARG INTEGER, RIGHTARG INTEGER);\nInsert into INTDEMO0 (LEFTARG, RIGHTARG) values (1, 0);\nInsert into INTDEMO0 (LEFTARG, RIGHTARG) values (0, -1);\nInsert into INTDEMO0 (LEFTARG, RIGHTARG) values (-1, -1);\nInsert into INTDEMO0 (LEFTARG, RIGHTARG) values (1, 1);\n\n'
+      ];
+  };
+  auth: DefaultH2;
+}
+
+
+###Runtime
+Runtime showcase::simple::connection::TestRuntime
+{
+  mappings:
+  [
+  ];
+  connections:
+  [
+    showcase::simple::store::TestDatabase:
+    [
+      connection: showcase::simple::connection::TestConnection
+    ]
+  ];
+}

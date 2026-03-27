@@ -1,0 +1,67 @@
+server:
+  adminContextPath: /admin
+  applicationConnectors:
+    - type: http
+      port: ${LEGEND_OMNIBUS_ENGINE_PORT}
+      maxRequestHeaderSize: 128KiB
+  adminConnectors:
+    - type: http
+      port: ${LEGEND_OMNIBUS_ENGINE_ADMIN_PORT}
+  gzip:
+    includedMethods:
+      - GET
+      - POST
+  requestLog:
+    appenders: []
+  rootPath: /api
+sessionCookie: LEGEND_ENGINE_JSESSIONID
+logging:
+  level: INFO
+  appenders:
+    - type: console
+      logFormat: "%msg\r\n"
+swagger:
+  title: Legend Engine
+  resourcePackage: org.finos.legend
+
+pac4j:
+  clients:
+    - org.pac4j.core.client.direct.AnonymousClient: {}
+
+deployment:
+  mode: TEST_IGNORE_FUNCTION_MATCH
+opentracing:
+  elastic: ""
+  zipkin: ""
+  uri: ""
+  authenticator:
+    principal: ""
+    keytab: ""
+metadataserver:
+  pure:
+    host: unused # unsupported flow
+    port: 1234 # unsupported flow
+  alloy:
+    host: unused # unsupported flow
+    port: 1234 # unsupported flow
+    prefix: /depot/api
+  sdlc:
+    host: localhost
+    port: ${LEGEND_OMNIBUS_NGINX_PORT}
+    prefix: /sdlc
+temporarytestdb:
+  port: ${LEGEND_OMNIBUS_ENGINE_TEMP_DB_PORT}
+relationalexecution:
+  temporarytestdb:
+    port: ${LEGEND_OMNIBUS_ENGINE_TEMP_DB_PORT}
+  tempPath: /tmp/
+  flowProviderClass: >-
+    org.finos.legend.engine.authentication.LegendDefaultDatabaseAuthenticationFlowProvider
+  flowProviderConfiguration:
+    _type: legendDefault
+errorhandlingconfiguration:
+  enabled: true
+activatorConfiguration: []
+vaults:
+  - _type: property
+    location: /app/engine/config/vault.properties

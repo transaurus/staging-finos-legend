@@ -1,0 +1,86 @@
+{
+  "docs": {
+    "Overview": [
+      "overview/legend-overview",
+      "overview/legend-features",
+      "overview/legend-glossary"
+    ],
+    "User Journeys": [
+      "user-journeys/build-data-model",
+      "user-journeys/publish-model-changes", 
+      "user-journeys/generate-model-schema", 
+      "user-journeys/consume-model-artifacts",
+      "user-journeys/connect-datasources",
+      "user-journeys/query-data",
+      "user-journeys/map-models",
+      "user-journeys/create-apis",
+      "user-journeys/find",
+      "user-journeys/visualize-modelled-data",
+      "user-journeys/rely-quality-data-by-design"
+    ],
+    "Getting Started": [
+      "getting-started/introduction-to-legend",
+      "getting-started/installation-guide"
+    ],
+    "Showcase Projects": [
+      "showcases/showcase-projects"
+    ],
+    "Studio Tutorials": [
+      "tutorials/studio-workspace",
+      "tutorials/studio-package",
+      "tutorials/studio-class",
+      "tutorials/studio-enumeration",
+      "tutorials/studio-profile",
+      "tutorials/studio-association",
+      "tutorials/studio-function",
+      "tutorials/studio-measure",
+      "tutorials/studio-m2m-mapping",
+      "tutorials/studio-relational-mapping",
+      "tutorials/studio-mapping-test",
+      "tutorials/services-runtime",
+      "tutorials/services-connection",
+      "tutorials/services-service",
+      "tutorials/studio-file-generation",
+      "tutorials/studio-flat-data-schema",
+      "tutorials/studio-text",
+      "tutorials/studio-diagram",
+      "tutorials/query-dataspace",
+      "tutorials/studio-schemaset",
+      "tutorials/studio-binding",
+      "tutorials/studio-persistence",
+      "tutorials/studio-servicestore",
+      "tutorials/studio-tests",
+      "tutorials/studio-project-dependencies",
+      "tutorials/studio-manage-model-information",
+      "tutorials/studio-find-models",
+      "tutorials/studio-sdlc"
+    ],
+    "Query Tutorials": [
+      "tutorials/query-builder",
+      "tutorials/query-dataspace",
+      "tutorials/query-execution-context",
+      "tutorials/query-explorer",
+      "tutorials/query-parameter",
+      "tutorials/query-fetch-structure",
+      "tutorials/query-filter",
+      "tutorials/query-export"
+    ],
+    "Reference Docs": [
+      "reference/legend-language",
+      "reference/released-functions",
+      "reference/upcoming-functions",
+      "reference/stores",
+      "reference/external-format",
+      "reference/query-protocol"
+    ],
+    "Community": [
+      "community/contribute-to-legend",
+      "community/get-help-from-community",
+      "community/legend-roadmap",
+      "community/legend-media",
+      "community/case-studies",
+      "community/external-integrations",
+      "community/terms-of-service"
+    ]
+  }
+}

@@ -1,0 +1,319 @@
+###Data
+Data data::MyFirmData
+{
+  ExternalFormat
+  #{
+    contentType: 'application/json';
+    data: '{\n  "employees": [\n    {\n      "firstName": "John",\n      "lastName": "Smith"\n    }\n  ],\n  "legalName": "Business",\n  "type": "llc"\n}';
+  }#
+}
+
+
+###Text
+Text mapping::m2mREADME
+{
+  type: plainText;
+  content: '---\nTitle: Legend Model-to-Model Services & Hosting\nDescription: Example implementation of Legend Model-to-Model Services and Hosting\n---\n\n# Overview\n\nTry out Legend Services! [Go to the guide!](https://legend.finos.org/docs/overview/legend-overview)\n\n# Use Legend to Create Model-to-Model Mapping, Services, and Hosting\n\n## Prerequisite\n\n## Modeling\nThe first step of this implementation involves creating models.\n\nFor the purposes of this showcase (and for any model-to-model service), you will need to create two models: one source model and one target model.\n\nBy doing this, you are able to take in input data and transform this data from source to target.\n\nIn this example, our input data is stored in JSON format in `data::MyFirmData`.\n\nOur JSON data is connected to via `mapping::FirmConnection`, and `mapping::FirmRuntime` uses the connection to map the data into the model.\n\nOur source models are `model::Firm` and `model::Person`.\n\nOur target models are `model::target::_Firm` and `model::target::_Person`\n\n## Model-to-Model Service\nServices contain three different components, as follows:\n1. Function: uses a graphFetch query to select the properties of the target class that should be mapped and returned in the JSON response\n   1a. In our example, our Function is located under `mapping::FirmService`\n2. Mapping: a standard model-to-model mapping\n   2a. In our example, our Mapping is located under `mapping::ModelToModelMapping`\n3. Runtime: connection types are JsonModel, XmlModel, and FlatData.\n   3a. In our example, our Runtime is a JsonModel, and is located under `mapping::FirmRuntime`';
+}
+
+
+###Service
+Service mapping::FirmService
+{
+  pattern: '/83a0d72d-e69d-453e-8f23-8059767aeab7';
+  ownership: DID { identifier: '' };
+  documentation: '';
+  autoActivateUpdates: true;
+  execution: Single
+  {
+    query: |model::target::_Firm.all()->graphFetch(
+      #{
+        model::target::_Firm{
+          myLegalName,
+          name,
+          employees{
+            fullName
+          }
+        }
+      }#
+    )->serialize(
+      #{
+        model::target::_Firm{
+          myLegalName,
+          name,
+          employees{
+            fullName
+          }
+        }
+      }#
+    );
+    mapping: mapping::ModelToModelMapping;
+    runtime: mapping::FirmRuntime;
+  }
+  testSuites:
+  [
+    testSuite_1:
+    {
+      data:
+      [
+        connections:
+        [
+          connection_1:
+            ExternalFormat
+            #{
+              contentType: 'application/json';
+              data: '{\n  "employees": [\n    {\n      "firstName": "John",\n      "lastName": "Smith"\n    }\n  ],\n  "legalName": "Business",\n  "type": "llc"\n}';
+            }#
+        ]
+      ]
+      tests:
+      [
+        test_1:
+        {
+          serializationFormat: PURE;
+          asserts:
+          [
+            assertion_1:
+              EqualToJson
+              #{
+                expected:
+                  ExternalFormat
+                  #{
+                    contentType: 'application/json';
+                    data: '{\n  "myLegalName()": "my name is: Business",\n  "name": "Business",\n  "employees": [\n    {\n      "fullName": "John Smith"\n    }\n  ]\n}';
+                  }#;
+              }#
+          ]
+        }
+      ]
+    }
+  ]
+}
+
+
+###Pure
+Enum model::target::IncType
+{
+  LLC,
+  CORP
+}
+
+Class model::Person
+{
+  firstName: String[1];
+  lastName: String[1];
+}
+
+Class model::Firm
+{
+  employees: model::Person[1..*];
+  legalName: String[1];
+}
+
+Class model::target::_Firm
+{
+  employees: model::target::_Person[1..*];
+  name: String[1];
+  myLegalName() {'my name is: ' + $this.name}: String[1];
+}
+
+Class model::target::_Person
+{
+  fullName: String[1];
+}
+
+
+###Mapping
+Mapping mapping::ModelToModelMapping
+(
+  *model::target::_Person: Pure
+  {
+    ~src model::Person
+    fullName: $src.firstName + ' ' + $src.lastName
+  }
+  *model::target::_Firm: Pure
+  {
+    ~src model::Firm
+    employees[model_target__Person]: $src.employees,
+    name: $src.legalName
+  }
+
+  model::target::IncType: EnumerationMapping
+  {
+    LLC: ['llc'],
+    CORP: ['corp']
+  }
+
+  testSuites:
+  [
+    FirmSuite:
+    {
+      function: |model::target::_Firm.all()->graphFetch(
+  #{
+    model::target::_Firm{
+      employees{
+        fullName
+      },
+      name,
+      myLegalName
+    }
+  }#
+)->serialize(
+  #{
+    model::target::_Firm{
+      employees{
+        fullName
+      },
+      name,
+      myLegalName
+    }
+  }#
+);
+      tests:
+      [
+        AppleData:
+        {
+          doc: 'This test will use Apple Data and assert  the transformation.';
+          data:
+          [
+            ModelStore:
+              ModelStore
+              #{
+                model::Firm:
+                  ExternalFormat
+                  #{
+                    contentType: 'application/json';
+                    data: '{\n  "employees": [\n    {\n      "firstName": "firstEmployeeName",\n      "lastName": "secondEmployeeName"\n    }\n  ],\n  "legalName": "Apple Inc"\n}';
+                  }#
+              }#
+          ];
+          asserts:
+          [
+            expectedAssertion:
+              EqualToJson
+              #{
+                expected:
+                  ExternalFormat
+                  #{
+                    contentType: 'application/json';
+                    data: '{\n  "employees" : [ {\n    "fullName" : "firstEmployeeName secondEmployeeName"\n  } ],\n  "name" : "Apple Inc",\n  "myLegalName()" : "my name is: Apple Inc"\n}';
+                  }#;
+              }#
+          ];
+        },
+        GoogleData:
+        {
+          data:
+          [
+            ModelStore:
+              ModelStore
+              #{
+                model::Firm:
+                  ExternalFormat
+                  #{
+                    contentType: 'application/json';
+                    data: '{\n  "employees": [\n    {\n      "firstName": "firstEmployeeName",\n      "lastName": "secondEmployeeName"\n    }\n  ],\n  "legalName": "Google"\n}';
+                  }#
+              }#
+          ];
+          asserts:
+          [
+            expectedAssertion:
+              EqualToJson
+              #{
+                expected:
+                  ExternalFormat
+                  #{
+                    contentType: 'application/json';
+                    data: '{\r\n  "employees" : [ {\r\n    "fullName" : "firstEmployeeName secondEmployeeName"\r\n  } ],\r\n  "name" : "Google",\r\n  "myLegalName()" : "my name is: Google"\r\n}';
+                  }#;
+              }#
+          ];
+        },
+        MyData:
+        {
+          doc: '';
+          data:
+          [
+            ModelStore:
+              ModelStore
+              #{
+                model::Firm:
+                  Reference
+                  #{
+                    data::MyFirmData
+                  }#
+              }#
+          ];
+          asserts:
+          [
+            expectedAssertion:
+              EqualToJson
+              #{
+                expected:
+                  ExternalFormat
+                  #{
+                    contentType: 'application/json';
+                    data: '{\r\n  "employees" : [ {\r\n    "fullName" : "John Smith"\r\n  } ],\r\n  "name" : "Business",\r\n  "myLegalName()" : "my name is: Business"\r\n}';
+                  }#;
+              }#
+          ];
+        },
+        MyData2:
+        {
+          doc: '';
+          data:
+          [
+            ModelStore:
+              ModelStore
+              #{
+                model::Firm:
+                  Reference
+                  #{
+                    data::MyFirmData
+                  }#
+              }#
+          ];
+          asserts:
+          [
+            expectedAssertion:
+              EqualToJson
+              #{
+                expected:
+                  ExternalFormat
+                  #{
+                    contentType: 'application/json';
+                    data: '{\n  "employees" : [ {\n    "fullName" : "John Smith"\n  } ],\n  "name" : "Business",\n  "myLegalName()" : "my name is: Business"\n}';
+                  }#;
+              }#
+          ];
+        }
+      ];
+    }
+  ]
+)
+
+
+###Connection
+JsonModelConnection mapping::FirmConnection
+{
+  class: model::Firm;
+  url: 'data:application/json,%7B%7D';
+}
+
+
+###Runtime
+Runtime mapping::FirmRuntime
+{
+  mappings:
+  [
+    mapping::ModelToModelMapping
+  ];
+  connections:
+  [
+    ModelStore:
+    [
+      connection_1: mapping::FirmConnection
+    ]
+  ];
+}

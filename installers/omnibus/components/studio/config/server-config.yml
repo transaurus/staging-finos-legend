@@ -1,0 +1,39 @@
+server:
+  applicationConnectors:
+    - type: http
+      port: ${LEGEND_OMNIBUS_STUDIO_PORT}
+      maxRequestHeaderSize: 128KiB
+  gzip:
+    includedMethods:
+      - GET
+      - POST
+  requestLog:
+    appenders: []
+sessionCookie: LEGEND_STUDIO_JSESSIONID
+logging:
+  level: INFO
+  loggers:
+    root:
+      level: INFO
+    org.pac4j:
+      level: INFO
+  appenders:
+    - type: console
+
+pac4j:
+  clients:
+    - org.pac4j.core.client.direct.AnonymousClient: {}
+
+html5Router: true
+routerExemptPaths:
+  - /editor.worker.js
+  - /json.worker.js
+  - /editor.worker.js.map
+  - /json.worker.js.map
+  - /version.json
+  - /config.json
+  - /favicon.ico
+  - /static
+localAssetPaths:
+  /studio/config.json: /app/studio/config/config.json
+uiPath: /studio
