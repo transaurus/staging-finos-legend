@@ -7,5 +7,5 @@
   "buildCommand": "npm run build",
   "buildOutput": "build",
   "packageManager": "npm",
-  "nodeVersion": "20"
+  "nodeVersion": "18"
 }
