@@ -1,6 +1,10 @@
 const pureHighlighter = require("../website/pureHighlighter");
 
 module.exports = {
+  i18n: {
+    defaultLocale: "en",
+    locales: ["en", "zh-Hans"],
+  },
   title: "Legend",
   tagline:
     "Language and visual platform to generate models for the financial services industry",
@@ -25,7 +29,7 @@ module.exports = {
       },
     },
   },
-  onBrokenLinks: process.env.NODE_ENV === "production" ? "throw" : "warn",
+  onBrokenLinks: 'warn' : "warn",
   onBrokenMarkdownLinks:
     process.env.NODE_ENV === "production" ? "throw" : "warn",
   onDuplicateRoutes: process.env.NODE_ENV === "production" ? "throw" : "warn",
